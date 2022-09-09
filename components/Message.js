@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
+import { AuthContext } from '../context/AuthContext'
 
 const Message = () => {
   const [owner, setOwner] = useState(false)
+  const { currentUser } = useContext(AuthContext)
   return (
     <div
       className={
@@ -10,7 +12,7 @@ const Message = () => {
     >
       <div className='flex flex-col'>
         <img
-          src='https://images.pexels.com/photos/13107430/pexels-photo-13107430.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+          src={`${currentUser.photoURL}`}
           alt=''
           className='w-[40px] h-[40px] rounded-full object-cover'
         />
@@ -37,7 +39,7 @@ const Message = () => {
           Hello
         </p>
         <img
-          src='https://images.pexels.com/photos/13107430/pexels-photo-13107430.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+          src={`${currentUser.photoURL}`}
           alt=''
           className='object-cover w-[50%] rounded-md'
         />

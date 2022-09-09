@@ -5,7 +5,7 @@ import { ImFilePicture } from 'react-icons/im'
 
 const Input = () => {
   return (
-    <div className='h-[60px] w-[100%] bg-white p-2 absolute top-[88%] flex items-center justify-between'>
+    <div className='h-[60px] w-[100%] bg-white p-2 absolute top-[89%] flex items-center justify-between'>
       <input
         type='text'
         className='border-none outline-none w-[75%]'

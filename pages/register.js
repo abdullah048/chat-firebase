@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { FiEye } from 'react-icons/fi'
 import { FiEyeOff } from 'react-icons/fi'
 import { auth } from '../firebase'
@@ -8,13 +8,30 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { storage } from '../firebase'
 import { db } from '../firebase'
 import { doc, setDoc } from 'firebase/firestore'
+import { useRouter } from 'next/router'
+import { AuthContext } from '../context/AuthContext'
+import Link from 'next/link'
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false)
+  const router = useRouter()
+  const { currentUser } = useContext(AuthContext)
+
+  useEffect(() => {
+    if (currentUser) {
+      router.push('/')
+    }
+  }, [currentUser])
 
   const handleSubmit = e => {
     e.preventDefault()
-    const displayName = e.target[0].value
+    let displayName = ''
+    if (e.target[0].value.length <= 8) {
+      displayName = e.target[0].value
+    } else {
+      return toast.error('Display Name could be of max 8 characters')
+    }
+
     const email = e.target[1].value
     const password = e.target[2].value
     const file = e.target[3].files[0]
@@ -55,6 +72,8 @@ const Register = () => {
                 displayName,
                 photoURL: downloadURL
               })
+              setDoc(doc(db, 'userChat', user.uid), {})
+              router.push('/')
             })
           }
         )
@@ -114,7 +133,7 @@ const Register = () => {
           </button>
         </form>
         <p className='text-[#5d5d8d] text-sm mt-2'>
-          You have an account? Login
+          You have an account? <Link href={'/login'}>Login</Link>
         </p>
       </div>
     </div>

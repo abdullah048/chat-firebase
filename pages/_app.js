@@ -1,11 +1,14 @@
 import { Toaster } from 'react-hot-toast'
 import '../styles/globals.css'
+import { AuthContextProvider } from '../context/AuthContext'
 
 function MyApp({ Component, pageProps }) {
   return (
     <>
       <Toaster />
-      <Component {...pageProps} />
+      <AuthContextProvider>
+        <Component {...pageProps} />
+      </AuthContextProvider>
     </>
   )
 }

@@ -1,6 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { auth } from '../firebase'
+import { AuthContext } from '../context/AuthContext'
 
 const Navbar = () => {
+  const { currentUser } = useContext(AuthContext)
+  console.log(currentUser)
   return (
     <>
       <div className='text-center text-white font-bold text-xl my-1'>
@@ -10,12 +14,15 @@ const Navbar = () => {
         <div className='flex items-center gap-2'>
           <img
             className='h-[24px] w-[24px] bg-white rounded-full object-cover'
-            src='https://images.pexels.com/photos/13107430/pexels-photo-13107430.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+            src={`${currentUser.photoURL}`}
             alt=''
           />
-          <span>Abdullah</span>
+          <span>{currentUser.displayName}</span>
         </div>
-        <button className='bg-[#5d5d8b] p-1 rounded-sm text-xs cursor-pointer'>
+        <button
+          className='bg-[#5d5d8b] p-1 rounded-sm text-xs cursor-pointer'
+          onClick={() => auth.signOut()}
+        >
           Log Out
         </button>
       </div>
