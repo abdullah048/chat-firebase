@@ -1,11 +1,28 @@
-import React from 'react'
+import { doc, onSnapshot } from 'firebase/firestore'
+import React, { useContext, useEffect, useState } from 'react'
+import { ChatContext } from '../context/ChatContext'
+import { db } from '../firebase'
 import Message from './Message'
 
 const Messages = () => {
+  const [messages, setMessages] = useState([])
+  const {
+    data: { chatId }
+  } = useContext(ChatContext)
+
+  useEffect(() => {
+    const unSub = onSnapshot(doc(db, 'chats', chatId), doc => {
+      doc.exists && setMessages(doc.data()?.messages)
+    })
+    return () => {
+      unSub()
+    }
+  }, [chatId])
+
+  console.log(messages)
   return (
     <div className='overflow-scroll h-[80%] px-2 py-2'>
-      <Message />
-      <Message />
+      {messages && messages?.map(msg => <Message message={msg} key={msg.id} />)}
     </div>
   )
 }

@@ -1,5 +1,15 @@
 import React, { useContext, useState } from 'react'
-import { collection, doc, getDocs, query, where } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where
+} from 'firebase/firestore'
 import { db } from '../firebase'
 import { toast } from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
@@ -8,6 +18,39 @@ const Search = () => {
   const [userName, setUserName] = useState('')
   const [user, setUser] = useState(null)
   const { currentUser } = useContext(AuthContext)
+
+  const handleSelect = async user => {
+    const chatId =
+      currentUser.uid > user.uid
+        ? currentUser.uid + user.uid
+        : user.uid + currentUser.uid
+    try {
+      const res = await getDoc(doc(db, 'chats', chatId))
+      if (!res.exists()) {
+        await setDoc(doc(db, 'chats', chatId), { messages: [] })
+        await updateDoc(doc(db, 'userChat', currentUser.uid), {
+          [chatId + '.userInfo']: {
+            uid: user.uid,
+            displayName: user.displayName,
+            photoURL: user.photoURL
+          },
+          [chatId + '.date']: serverTimestamp()
+        })
+        await updateDoc(doc(db, 'userChat', user.uid), {
+          [chatId + '.userInfo']: {
+            uid: currentUser.uid,
+            displayName: currentUser.displayName,
+            photoURL: currentUser.photoURL
+          },
+          [chatId + '.date']: serverTimestamp()
+        })
+      }
+    } catch (error) {
+      toast.error(`${error}`)
+    }
+    setUser(null)
+    setUserName('')
+  }
 
   const handleSearch = async () => {
     const collectionRef = collection(db, 'users')
@@ -42,7 +85,10 @@ const Search = () => {
         />
       </div>
       {user && (
-        <div className='flex items-center p-3 gap-3 cursor-pointer hover:bg-[#2f2d52] hover:rounded-md'>
+        <div
+          className='flex items-center p-3 gap-3 cursor-pointer hover:bg-[#2f2d52] hover:rounded-md'
+          onClick={() => handleSelect(user)}
+        >
           <img
             className='w-[50px] h-[50px] rounded-full object-cover'
             src={`${user.photoURL}`}
